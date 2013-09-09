@@ -1,0 +1,222 @@
+<html>
+    <head>
+        <title>
+            JRay
+        </title>
+        <script src="JRay.js"></script>
+        <script src="textures.js"></script>
+    </head>
+    <body>
+		
+        <canvas id="cv" style="position:absolute;top:0;left:0;" width="400" height="400"></canvas>
+        
+        <div style="position:absolute; top:0; left:400; width:5; height:405; background-color:#000; font-size:1;"></div>
+		<div style="position:absolute; top:400; left:0; width:405; height:5; background-color:#000; font-size:1;"></div>
+		<div style="position:absolute; top:5;left:410;font-family:monospace;" id="d">
+        	<select id="scene">
+            	<option value="0">4 balls and sky</option>
+            	<option value="1">Solar System</option>
+            </select><br>
+            <input id="antialias" type="checkbox"> Anti Aliasing<br>
+            Pixelation: <input id="pix" value="2" style="font-family:monospace;width:30px;" maxlength="2"><br>
+            <input type="button" value="Render" onClick="genS();" />
+        </div>
+		<div style="position:absolute; top:5;left:410;font-family:monospace;" id="e"></div>
+        
+        <script>
+			var s = new JRay.Scene();
+			desize = 200;
+			
+			var woodimg = new Image();
+			woodimg.src = woodtexture;
+			var skyimg = new Image();
+			skyimg.src = "textures/clouds.jpg";
+			var earthimg = new Image(); earthimg.src = "textures/earth.jpg";
+			var venusimg = new Image(); venusimg.src = "textures/venus.jpg";
+			var mercuryimg = new Image(); mercuryimg.src = "textures/mercury.jpg";
+			var moonimg = new Image(); moonimg.src = "textures/moon.jpg";
+			
+			function genS() {
+				var el = document.getElementById("scene");
+				var strUser = parseInt(el.options[el.selectedIndex].value);
+				generateScene(strUser);
+			}
+			
+			function generateScene(strUser) {
+				switch(strUser) {
+					case 0:
+						s.clearScene();
+						
+						var md = new JRay.MeshDef();
+						var bd = new JRay.BoundingDef();
+						
+						md.type = JRay.Mesh.SOLID;
+						md.reflect = 0.7;
+						md.color = new JRay.color(155,155,155);
+						sph = new JRay.Objects.Sphere(new JRay.point(30,60,-1000),100);
+						s.addObject(sph,md);
+						
+						md.type = JRay.Mesh.SOLID;
+						md.color = new JRay.color(255,0,0);
+						sph = new JRay.Objects.Sphere(new JRay.point(40,-120,-920),40);
+						s.addObject(sph,md);
+						
+						md.type = JRay.Mesh.SOLID;
+						md.color = new JRay.color(255,255,0);
+						sph = new JRay.Objects.Sphere(new JRay.point(-110,-190,-1100),30);
+						s.addObject(sph,md);
+						
+						md.type = JRay.Mesh.SOLID;
+						md.color = new JRay.color(0,255,0);
+						sph = new JRay.Objects.Sphere(new JRay.point(-80,-80,-1200),100);
+						s.addObject(sph,md);
+						md.reflect = 0;
+						
+						md.type = JRay.Mesh.SOLID;
+						md.alpha = 0.4;
+						md.color = new JRay.color(100,100,100);
+						md.applyColor(JRay.Mesh.Color.IMAGE({
+							image : skyimg,
+							coverType : JRay.Mesh.Image.Cover.PLANAR,
+							width : 2460,
+							height : 4320,
+							t1 : 'x',
+							t2 : 'z'
+						}));
+						sph = new JRay.Objects.Plane(new JRay.vector(0,1,0),900);
+						s.addObject(sph,md);
+						
+						md.applyColor(JRay.Mesh.Color.IMAGE({
+							image : woodimg,
+							coverType : JRay.Mesh.Image.Cover.PLANAR,
+							width : 2460,
+							height : 4320,
+							t1 : 'x',
+							t2 : 'z'
+						}));
+						sph = new JRay.Objects.Plane(new JRay.vector(0,1,0),-160);
+						s.addObject(sph,md);
+						
+						s.addLightSource(new JRay.point(-1320,-100,-200),3);
+						s.addLightSource(new JRay.point(1120,1800,-4700),10);
+						
+						s.setViewingPoint(new JRay.point(0,0,0));
+						s.setPerspective(new JRay.point(0,0,-1000),-desize,-desize,desize,desize);
+						
+					break;
+					case 1:
+						s.clearScene();
+						
+						var md = new JRay.MeshDef();
+						var bd = new JRay.BoundingDef();
+						
+						md.type = JRay.Mesh.SOLID;
+						md.color = new JRay.color(155,155,155);
+						md.applyColor(JRay.Mesh.Color.IMAGE({
+							image : earthimg,
+							coverType : JRay.Mesh.Image.Cover.SPHERICAL,
+							width : 1,
+							height : 1
+						}));
+						sph = new JRay.Objects.Sphere(new JRay.point(110,60,-1800),120);
+						s.addObject(sph,md);
+						
+						md.type = JRay.Mesh.SOLID;
+						md.color = new JRay.color(155,155,155);
+						md.applyColor(JRay.Mesh.Color.IMAGE({
+							image : moonimg,
+							coverType : JRay.Mesh.Image.Cover.SPHERICAL,
+							width : 1,
+							height : 1
+						}));
+						sph = new JRay.Objects.Sphere(new JRay.point(0,60,-1100),32);
+						s.addObject(sph,md);
+						
+						md.type = JRay.Mesh.SOLID;
+						md.color = new JRay.color(155,155,155);
+						md.applyColor(JRay.Mesh.Color.IMAGE({
+							image : venusimg,
+							coverType : JRay.Mesh.Image.Cover.SPHERICAL,
+							width : 1,
+							height : 1
+						}));
+						sph = new JRay.Objects.Sphere(new JRay.point(550,-950,-12700),120);
+						s.addObject(sph,md);
+						
+						md.type = JRay.Mesh.SOLID;
+						md.color = new JRay.color(155,155,155);
+						md.applyColor(JRay.Mesh.Color.IMAGE({
+							image : mercuryimg,
+							coverType : JRay.Mesh.Image.Cover.SPHERICAL,
+							width : 1,
+							height : 1
+						}));
+						sph = new JRay.Objects.Sphere(new JRay.point(-410,-210,-3700),30);
+						s.addObject(sph,md);
+						
+						md = new JRay.MeshDef();
+						
+						dasun = new JRay.point(-2020,-1150,-11000);
+						md.color = new JRay.color(255,255,255);
+						sph = new JRay.Objects.Sphere(dasun,160);
+						s.addObject(sph,md);
+						
+						s.addLightSource(dasun,80);
+						
+						s.setViewingPoint(new JRay.point(0,0,0));
+						s.setPerspective(new JRay.point(0,0,-1000),-desize,-desize,desize,desize);
+						
+					break;
+				}
+				document.getElementById('d').style.display = 'none';
+				document.getElementById('e').style.display = 'block';
+				render();
+			}
+			//setTimeout("generateScene(1)",250);
+			function render() {
+				
+				pix = parseInt(document.getElementById('pix').value);
+				s.setPixelation((pix>0&&pix<50)?pix:4);
+				
+				if (document.getElementById('antialias').checked) {
+					s.setAntiAlias(JRay.AntiAlias.SuperSampling3);
+				} else {
+					s.setAntiAlias(JRay.AntiAlias.None);
+				}
+				
+				var totalpix = 0, completedpix = 0,
+					startms = (new Date()).getTime(),
+					currentms = 0,
+					lapsed = 0;
+				totalpix = s.render(document.getElementById('cv').getContext('2d'), {
+					x : 0,
+					y : 0,
+					w : desize*2,
+					h : desize*2,
+					onStep : function(step) {
+						completedpix++;
+						if (completedpix % 10 == 0) {
+							currentms = (new Date()).getTime();
+							lapsed = currentms-startms;
+							prog = Math.round(completedpix/totalpix*100*100)/100;
+							rate = Math.round(completedpix/lapsed*1000);
+							document.getElementById('e').innerHTML = completedpix+"/"+totalpix+"px ["+prog+"%]<br>"+
+								"Lapsed Time: "+(lapsed/1000)+"s<BR>"+
+								rate+"px/s<BR>"+
+								"ETA: "+((totalpix-completedpix)/rate)+"s";
+							window.title = "JRay - "+rate+"px/s";
+						}
+					},
+					onFinish : function() {
+						document.getElementById('d').innerHTML += "<br>Render Complete";
+					}
+				});
+				
+				
+			}
+		</script>
+        
+        
+        
+    </body>
+</html>
